@@ -2,5 +2,8 @@
     <string name="app_name">Zomato App</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="search_for_restaurants">Search for Restaurants...</string>
+    <string name="search_for_restaurants">Search for restaurants,cuisines..</string>
+    <string name="search_restaurant_name_here">Search Restaurant name here</string>
+    <string name="average_cost">Average Cost</string>
+    <string name="address">Address</string>
 </resources>

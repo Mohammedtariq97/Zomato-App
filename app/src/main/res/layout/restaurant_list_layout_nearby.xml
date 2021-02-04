@@ -15,7 +15,7 @@
             android:id="@+id/resImage"
             android:layout_width="match_parent"
             android:layout_height="230dp"
-            tools:src = "@drawable/placeholder"
+            android:src = "@drawable/placeholder"
             android:scaleType="fitXY"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"

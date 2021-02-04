@@ -1,6 +1,7 @@
 package com.example.zomatoapp.restaurants
 
 import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,10 +12,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.example.zomatoapp.R
-import com.example.zomatoapp.model.NearByRestaurant
-import org.w3c.dom.Text
+import com.example.zomatoapp.model.RestaurantModel
 
-class RestaurantAdapter1(private val context: Context, private val list: List<NearByRestaurant>) :
+class RestaurantAdapter1(private val context: Context, private val list: List<RestaurantModel>) :
     RecyclerView.Adapter<RestaurantAdapter1.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -32,6 +32,7 @@ class RestaurantAdapter1(private val context: Context, private val list: List<Ne
             .placeholder(R.drawable.placeholder)
             .apply(RequestOptions().fitCenter())
             .into(holder.restaurantImageView)
+
         holder.restaurantTitle.text = data.restaurant.name
         holder.restaurantRating.text = formatRating(data.restaurant.user_rating.aggregate_rating)
         holder.cuisines.text = data.restaurant.cuisines
@@ -43,13 +44,14 @@ class RestaurantAdapter1(private val context: Context, private val list: List<Ne
         val rating = data.restaurant.user_rating.aggregate_rating
         val avgCost = data.restaurant.average_cost_for_two
         val address = data.restaurant.location.address
+        val timings =  data.restaurant.timings
         holder.itemView.setOnClickListener(object : View.OnClickListener {
             override fun onClick(v: View?) {
                 v?.findNavController()?.navigate(
                     RestaurantFragmentDirections
                         .actionRestaurantFragmentToRestaurantDetailFragment(
                             resImage, resName,
-                            resCuisines, locality, rating, avgCost, address
+                            resCuisines, locality, rating, avgCost, address,timings
                         )
                 )
             }
@@ -61,7 +63,7 @@ class RestaurantAdapter1(private val context: Context, private val list: List<Ne
     }
 
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val restaurantImageView = itemView.findViewById<ImageView>(R.id.resImage)
+        val restaurantImageView: ImageView = itemView.findViewById(R.id.resImage)
         val restaurantTitle = itemView.findViewById<TextView>(R.id.resName)
         val restaurantRating = itemView.findViewById<TextView>(R.id.rating)
         val cuisines = itemView.findViewById<TextView>(R.id.cuisines)

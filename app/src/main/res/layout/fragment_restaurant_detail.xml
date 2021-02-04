@@ -26,7 +26,7 @@
         android:layout_marginStart="5dp"
         android:layout_marginTop="8dp"
         android:padding="4dp"
-        android:text="Oyalo Pizza"
+        tools:text="Oyalo Pizza"
         android:textColor="@color/black"
         android:textSize="25sp"
         android:textStyle="bold" />
@@ -37,7 +37,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="5dp"
         android:padding="4dp"
-        android:text="QuickBites - Italian,Pasta"
+        tools:text="QuickBites - Italian,Pasta"
         android:textSize="16sp" />
 
     <TextView
@@ -46,7 +46,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="5dp"
         android:padding="4dp"
-        android:text="Cantonment,Trichy"
+        tools:text="Cantonment,Trichy"
         android:textSize="16sp" />
 
     <TextView
@@ -55,7 +55,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="5dp"
         android:padding="4dp"
-        android:text="Rating : 4.0"
+        tools:text="Rating : 4.0"
         android:textSize="16sp" />
 
     <TextView
@@ -64,7 +64,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="5dp"
         android:padding="4dp"
-        android:text="Timings: 11AM - 11PM"
+        tools:text="Timings: 11AM - 11PM"
         android:textSize="16sp" />
 
     <TextView
@@ -74,7 +74,7 @@
         android:layout_marginStart="5dp"
         android:layout_marginTop="8dp"
         android:padding="4dp"
-        android:text="Average Cost"
+        android:text="@string/average_cost"
         android:textColor="@color/black"
         android:textSize="17sp"
         android:textStyle="bold" />
@@ -85,7 +85,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="5dp"
         android:padding="4dp"
-        android:text="Cost for two - Rs.200 (approx)"
+        tools:text="Cost for two - Rs.200 (approx)"
         android:textSize="16sp" />
 
     <TextView
@@ -95,7 +95,7 @@
         android:layout_marginStart="5dp"
         android:layout_marginTop="8dp"
         android:padding="4dp"
-        android:text="Address"
+        android:text="@string/address"
         android:textColor="@color/black"
         android:textSize="17sp"
         android:textStyle="bold" />
@@ -106,7 +106,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="5dp"
         android:padding="4dp"
-        android:text="14/1, Pudukottai Main Road, Toll Gate Signal, Cantonment, Trichy"
+        tools:text="14/1, Pudukottai Main Road, Toll Gate Signal, Cantonment, Trichy"
         android:textSize="16sp" />
 
 

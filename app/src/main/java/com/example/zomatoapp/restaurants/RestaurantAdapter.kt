@@ -12,6 +12,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.example.zomatoapp.R
 import com.example.zomatoapp.model.RestaurantModel
+import com.example.zomatoapp.search.SearchFragmentDirections
 
 class RestaurantAdapter(private val context: Context, private val list: List<RestaurantModel>) :
     RecyclerView.Adapter<RestaurantAdapter.ViewHolder>() {
@@ -39,16 +40,16 @@ class RestaurantAdapter(private val context: Context, private val list: List<Res
         val resCuisines = data.restaurant.cuisines
         val locality = data.restaurant.location.locality_verbose
         val rating = data.restaurant.user_rating.aggregate_rating
-        val timings = data.restaurant.timings
         val avgCost = data.restaurant.average_cost_for_two
         val address = data.restaurant.location.address
+        val timings = data.restaurant.timings
         holder.itemView.setOnClickListener(object : View.OnClickListener {
             override fun onClick(v: View?) {
                 v?.findNavController()?.navigate(
-                    RestaurantFragmentDirections
-                        .actionRestaurantFragmentToRestaurantDetailFragment(
+                    SearchFragmentDirections
+                        .actionSearchFragmentToRestaurantDetailFragment(
                             resImage, resName,
-                            resCuisines, locality, rating, avgCost, address
+                            resCuisines, locality, rating, avgCost, address,timings
                         )
                 )
             }

@@ -84,7 +84,7 @@ data class Restaurant (
     val menu_url:String,
     @SerializedName("featured_image")
     @Expose
-    val featured_image:String,
+    val featured_image:String="",
     @SerializedName("medio_provider")
     @Expose
     val medio_provider:Boolean,

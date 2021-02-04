@@ -22,6 +22,7 @@ class RestaurantDetailFragment : Fragment() {
     lateinit var rating:TextView
     lateinit var avgCost:TextView
     lateinit var address:TextView
+    lateinit var timings:TextView
 
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -39,6 +40,7 @@ class RestaurantDetailFragment : Fragment() {
         rating = view.findViewById(R.id.rating)
         avgCost = view.findViewById(R.id.avgCost)
         address = view.findViewById(R.id.address)
+        timings = view.findViewById(R.id.timings)
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -56,6 +58,7 @@ class RestaurantDetailFragment : Fragment() {
         rating.text = formatRating(args.rating)
         avgCost.text = formatCost(args.avgCost.toString())
         address.text =args.address
+        timings.text = formatTimings(args.timings)
     }
 
     private fun formatCost(cost: String): String {
@@ -63,7 +66,12 @@ class RestaurantDetailFragment : Fragment() {
     }
 
     private fun formatTimings(timings: String): String {
-        return "Timings - $timings"
+        if(timings != ""){
+            return "Timings - $timings"
+        }else{
+            return "Timings - 11am to 11pm"
+        }
+
     }
 
     private fun formatRating(rating: String): String {

@@ -15,7 +15,9 @@
             app:destination="@id/restaurantDetailFragment" />
         <action
             android:id="@+id/action_restaurantFragment_to_searchFragment"
-            app:destination="@id/searchFragment" />
+            app:destination="@id/searchFragment"
+            app:enterAnim="@android:anim/fade_in"
+            app:exitAnim="@android:anim/fade_out" />
     </fragment>
     <fragment
         android:id="@+id/restaurantDetailFragment"
@@ -42,6 +44,9 @@
         <argument
             android:name="address"
             app:argType="string" />
+        <argument
+            android:name="timings"
+            app:argType="string" />
     </fragment>
     <fragment
         android:id="@+id/searchFragment"
@@ -51,5 +56,8 @@
         <action
             android:id="@+id/action_searchFragment_to_restaurantFragment"
             app:destination="@id/restaurantFragment" />
+        <action
+            android:id="@+id/action_searchFragment_to_restaurantDetailFragment"
+            app:destination="@id/restaurantDetailFragment" />
     </fragment>
 </navigation>

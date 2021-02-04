@@ -80,7 +80,7 @@ class ApiUserRestClient : Activity() {
         val retrofit = NetworkClient.retrofitClient
         mApiUser = retrofit.create<ApiUser>(ApiUser::class.java)
 
-        val apiUserCall = mApiUser?.getNearByRestaurants(lat, lon)
+        val apiUserCall = mApiUser?.getNearByRestaurantsLocationDetails(lat, lon)
         Log.d("ApiUserRestClient", "$apiUserCall")
         apiUserCall?.enqueue(object : Callback<BaseModel3> {
 
@@ -95,6 +95,34 @@ class ApiUserRestClient : Activity() {
             }
 
             override fun onFailure(call: Call<BaseModel3>?, t: Throwable?) {
+
+                retrofitEventListener.onError(call, t)
+            }
+        })
+    }
+
+    fun getNearBySearchRestaurantDetails(entityId: String,entityType:String,lat: String, lon: String,
+        retrofitEventListener: RetrofitEventListener
+    ) {
+        val retrofit = NetworkClient.retrofitClient
+        mApiUser = retrofit.create<ApiUser>(ApiUser::class.java)
+
+        val apiUserCall = mApiUser?.getNearByRestaurants(entityId,entityType,"0","20",
+            lat, lon,"20000","real_distance","asc")
+        Log.d("ApiUserRestClient", "$apiUserCall")
+        apiUserCall?.enqueue(object : Callback<BaseModel1> {
+
+            override fun onResponse(
+                call: Call<BaseModel1>?,
+                response: Response<BaseModel1>?
+            ) {
+
+                if (response?.body() != null) {
+                    retrofitEventListener.onSuccess(call, response.body())
+                }
+            }
+
+            override fun onFailure(call: Call<BaseModel1>?, t: Throwable?) {
 
                 retrofitEventListener.onError(call, t)
             }

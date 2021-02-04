@@ -50,10 +50,8 @@ class RestaurantFragmentViewModel : ViewModel() {
 
     }
 
-    fun callSearchRestaurantApi(entityId: String, query: String) {
-        ApiUserRestClient.instance.getRestaurantDetails(
-            entityId,
-            query,
+    fun callSearchNearByRestaurantApi(entityId: String,entityType:String,lat:String,lon:String) {
+        ApiUserRestClient.instance.getNearBySearchRestaurantDetails(entityId, entityType,lat,lon,
             object : RetrofitEventListener {
                 override fun onSuccess(call: Call<*>?, response: Any?) {
                     if (response is BaseModel1) {
