@@ -101,13 +101,14 @@ class ApiUserRestClient : Activity() {
         })
     }
 
-    fun getNearBySearchRestaurantDetails(entityId: String,entityType:String,lat: String, lon: String,
+    fun getNearBySearchRestaurantDetails(entityId: String,entityType:String,start:String,
+                                         lat: String, lon: String,
         retrofitEventListener: RetrofitEventListener
     ) {
         val retrofit = NetworkClient.retrofitClient
         mApiUser = retrofit.create<ApiUser>(ApiUser::class.java)
 
-        val apiUserCall = mApiUser?.getNearByRestaurants(entityId,entityType,"0","20",
+        val apiUserCall = mApiUser?.getNearByRestaurants(entityId,entityType,start,"20",
             lat, lon,"20000","real_distance","asc")
         Log.d("ApiUserRestClient", "$apiUserCall")
         apiUserCall?.enqueue(object : Callback<BaseModel1> {

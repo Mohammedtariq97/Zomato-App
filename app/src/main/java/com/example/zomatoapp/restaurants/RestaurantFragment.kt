@@ -5,6 +5,7 @@ import android.content.pm.PackageManager
 import android.location.Geocoder
 import android.location.Location
 import android.os.Bundle
+import android.os.Handler
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -31,6 +32,7 @@ import okio.IOException
 import java.util.*
 
 
+@Suppress("DEPRECATION")
 class RestaurantFragment : Fragment() {
     companion object {
         const val TAG = "RestaurantFragment"
@@ -38,11 +40,18 @@ class RestaurantFragment : Fragment() {
     }
 
     lateinit var restaurantRecyclerViewList: RecyclerView
-    lateinit var searchLocationSearchEditText: SearchView
+    lateinit var searchLocationTextView: TextView
     lateinit var restaurantFragmentViewModel: RestaurantFragmentViewModel
     lateinit var searchRestaurantTextView: TextView
     private lateinit var client: FusedLocationProviderClient
     lateinit var indeterminateBar: ProgressBar
+    var start = 0
+    var isLoading = false
+    lateinit var mAdapter:RestaurantAdapter1
+    lateinit var geocoder:Geocoder
+    lateinit var lat:String
+    lateinit var lon:String
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -57,7 +66,7 @@ class RestaurantFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         restaurantRecyclerViewList = view.findViewById(R.id.restaurantRecyclerViewList)
-        searchLocationSearchEditText = view.findViewById(R.id.searchLocationSearchEditText)
+        searchLocationTextView = view.findViewById(R.id.searchLocationTextView)
         searchRestaurantTextView = view.findViewById(R.id.searchRestaurantTextView)
         indeterminateBar = view.findViewById(R.id.indeterminateBar)
 
@@ -105,12 +114,14 @@ class RestaurantFragment : Fragment() {
                             val location = task.getResult()
                             if (location != null) {
                                 try {
-                                    val geocoder = Geocoder(context, Locale.getDefault())
+                                    geocoder = Geocoder(context, Locale.getDefault())
                                     val address = geocoder.getFromLocation(
                                         location.latitude, location.longitude, 1
                                     )
                                     Log.d(TAG, "${address.get(0).latitude}")
                                     Log.d(TAG, "${address.get(0).longitude}")
+                                    lat = address.get(0).latitude.toString()
+                                    lon = address.get(0).longitude.toString()
                                     restaurantFragmentViewModel
                                         .callNearByRestaurantApi(
                                             address[0].latitude.toString(),
@@ -124,6 +135,7 @@ class RestaurantFragment : Fragment() {
                                             restaurantFragmentViewModel.callSearchNearByRestaurantApi(
                                                 it.location.entity_id.toString(),
                                                 it.location.entity_type,
+                                                start.toString(),
                                                 address[0].latitude.toString(),
                                                 address[0].longitude.toString()
                                             )
@@ -152,8 +164,8 @@ class RestaurantFragment : Fragment() {
 
     }
 
-
     private fun requestLocationPermission() {
+
         if (checkSelfPermission(
                 this.requireContext(),
                 Manifest.permission.ACCESS_FINE_LOCATION
@@ -184,6 +196,7 @@ class RestaurantFragment : Fragment() {
                                     restaurantFragmentViewModel.callSearchNearByRestaurantApi(
                                         it.location.entity_id.toString(),
                                         it.location.entity_type,
+                                        start.toString(),
                                         address[0].latitude.toString(),
                                         address[0].longitude.toString()
                                     )
@@ -212,13 +225,31 @@ class RestaurantFragment : Fragment() {
 
 
 
+
     private fun setRecyclerView1(list: List<RestaurantModel>) {
-        val mAdapter = RestaurantAdapter1(this.requireContext(), list)
+        mAdapter = RestaurantAdapter1(this.requireContext(), list)
         val mLayoutManager = LinearLayoutManager(this.requireContext())
         restaurantRecyclerViewList.layoutManager = mLayoutManager
         mLayoutManager.orientation = RecyclerView.VERTICAL
         restaurantRecyclerViewList.adapter = mAdapter
+        restaurantRecyclerViewList.addOnScrollListener(object:RecyclerView.OnScrollListener(){
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+                val visibleItemCount = mLayoutManager.childCount
+                val pastVisibleItem = mLayoutManager.findFirstCompletelyVisibleItemPosition()
+                val total = mAdapter.itemCount
+                if(!isLoading){
+                    if(visibleItemCount+pastVisibleItem >= total){
+                        start+= 20
+                        mAdapter.notifyDataSetChanged()
+                        requestLocationPermission()
+                    }
+                }
+            }
+        })
     }
+
+
 
 
 }

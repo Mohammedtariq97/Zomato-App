@@ -12,7 +12,6 @@ import retrofit2.Call
 
 class RestaurantFragmentViewModel : ViewModel() {
     val livedataRestaurantSearch = MutableLiveData<BaseModel1>()
-    val liveDataLocationSearch = MutableLiveData<BaseModel2>()
     val liveDataNearByResSearch = MutableLiveData<BaseModel3>()
 
     fun callNearByRestaurantApi(lat: String, lon: String) {
@@ -34,24 +33,8 @@ class RestaurantFragmentViewModel : ViewModel() {
 
     }
 
-    fun callSearchLocationApi(query: String) {
-        ApiUserRestClient.instance.getLocationDetails(query, object : RetrofitEventListener {
-            override fun onSuccess(call: Call<*>?, response: Any?) {
-                if (response is BaseModel2) {
-                    Log.d(RestaurantFragment.TAG, "response= $response")
-                    liveDataLocationSearch.value = response
-                }
-            }
-
-            override fun onError(call: Call<*>?, t: Throwable?) {
-                Log.d(RestaurantFragment.TAG, "Error")
-            }
-        })
-
-    }
-
-    fun callSearchNearByRestaurantApi(entityId: String,entityType:String,lat:String,lon:String) {
-        ApiUserRestClient.instance.getNearBySearchRestaurantDetails(entityId, entityType,lat,lon,
+    fun callSearchNearByRestaurantApi(entityId: String,entityType:String,start:String,lat:String,lon:String) {
+        ApiUserRestClient.instance.getNearBySearchRestaurantDetails(entityId, entityType,start, lat,lon,
             object : RetrofitEventListener {
                 override fun onSuccess(call: Call<*>?, response: Any?) {
                     if (response is BaseModel1) {

@@ -6,4 +6,6 @@
     <string name="search_restaurant_name_here">Search Restaurant name here</string>
     <string name="average_cost">Average Cost</string>
     <string name="address">Address</string>
+    <string name="pick_your_location">Pick your location</string>
+    <string name="search_for_your_location">Search city here…</string>
 </resources>
