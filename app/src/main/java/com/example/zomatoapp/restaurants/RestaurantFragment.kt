@@ -1,31 +1,28 @@
 package com.example.zomatoapp.restaurants
 
 import android.Manifest
+import android.content.Context
 import android.content.pm.PackageManager
 import android.location.Geocoder
 import android.location.Location
 import android.os.Bundle
-import android.os.Handler
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ProgressBar
 import android.widget.TextView
-import androidx.appcompat.widget.SearchView
 import androidx.core.content.ContextCompat.checkSelfPermission
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
-import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.transition.TransitionInflater
 import com.example.zomatoapp.R
 import com.example.zomatoapp.model.RestaurantModel
-import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.android.gms.location.LocationServices
+import com.google.android.gms.location.*
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.gms.tasks.Task
 import okio.IOException
@@ -52,7 +49,6 @@ class RestaurantFragment : Fragment() {
     lateinit var lat:String
     lateinit var lon:String
 
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -69,7 +65,6 @@ class RestaurantFragment : Fragment() {
         searchLocationTextView = view.findViewById(R.id.searchLocationTextView)
         searchRestaurantTextView = view.findViewById(R.id.searchRestaurantTextView)
         indeterminateBar = view.findViewById(R.id.indeterminateBar)
-
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -82,7 +77,12 @@ class RestaurantFragment : Fragment() {
                 v?.findNavController()?.navigate(R.id.action_restaurantFragment_to_searchFragment)
             }
         })
+        searchLocationTextView.setOnClickListener(object : View.OnClickListener {
+            override fun onClick(v: View?) {
+                v?.findNavController()?.navigate(R.id.action_restaurantFragment_to_locationFragment)
+            }
 
+        })
     }
 
     override fun onRequestPermissionsResult(
@@ -118,8 +118,20 @@ class RestaurantFragment : Fragment() {
                                     val address = geocoder.getFromLocation(
                                         location.latitude, location.longitude, 1
                                     )
+                                    searchLocationTextView.text = address[0].getAddressLine(0)
                                     Log.d(TAG, "${address.get(0).latitude}")
                                     Log.d(TAG, "${address.get(0).longitude}")
+                                    Log.d(TAG, address[0].adminArea)
+//                                    Log.d(TAG, address[0].featureName)
+                                    Log.d(TAG, address[0].getAddressLine(0))
+                                    Log.d(TAG, address[0].locality)
+//                                    Log.d(TAG, address[0].subAdminArea)
+                                    Log.d(TAG, address[0].subLocality)
+//                                    Log.d(TAG, address[0].postalCode)
+//                                    Log.d(TAG, address[0].countryName)
+                                    Log.d(TAG, address[0].locale.toString())
+                                    Log.d(TAG, address[0].premises)
+                                    Log.d(TAG, address[0].thoroughfare)
                                     lat = address.get(0).latitude.toString()
                                     lon = address.get(0).longitude.toString()
                                     restaurantFragmentViewModel
@@ -174,7 +186,7 @@ class RestaurantFragment : Fragment() {
         ) {
             client.lastLocation.addOnCompleteListener(object : OnCompleteListener<Location> {
                 override fun onComplete(task: Task<Location>) {
-                    val location = task.getResult()
+                    val location = task.result
                     if (location != null) {
                         try {
                             val geocoder = Geocoder(context, Locale.getDefault())
@@ -183,6 +195,15 @@ class RestaurantFragment : Fragment() {
                             )
                             Log.d(TAG, "${address.get(0).latitude}")
                             Log.d(TAG, "${address.get(0).longitude}")
+                            Log.d(TAG, address[0].adminArea)
+                            Log.d(TAG, address[0].featureName)
+                            Log.d(TAG, address[0].getAddressLine(0))
+                            Log.d(TAG, address[0].locality)
+                            Log.d(TAG, address[0].subAdminArea)
+//                            Log.d(TAG, address[0].subLocality.toString())
+                            Log.d(TAG, address[0].postalCode)
+                            Log.d(TAG, address[0].countryName)
+                            searchLocationTextView.text = address[0].getAddressLine(0)
                             restaurantFragmentViewModel
                                 .callNearByRestaurantApi(
                                     address[0].latitude.toString(),
@@ -211,6 +232,7 @@ class RestaurantFragment : Fragment() {
                             e.printStackTrace()
                         }
                     }
+
                 }
 
             })
@@ -223,24 +245,21 @@ class RestaurantFragment : Fragment() {
 
     }
 
-
-
-
     private fun setRecyclerView1(list: List<RestaurantModel>) {
         mAdapter = RestaurantAdapter1(this.requireContext(), list)
         val mLayoutManager = LinearLayoutManager(this.requireContext())
         restaurantRecyclerViewList.layoutManager = mLayoutManager
         mLayoutManager.orientation = RecyclerView.VERTICAL
         restaurantRecyclerViewList.adapter = mAdapter
-        restaurantRecyclerViewList.addOnScrollListener(object:RecyclerView.OnScrollListener(){
+        restaurantRecyclerViewList.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
                 val visibleItemCount = mLayoutManager.childCount
                 val pastVisibleItem = mLayoutManager.findFirstCompletelyVisibleItemPosition()
                 val total = mAdapter.itemCount
-                if(!isLoading){
-                    if(visibleItemCount+pastVisibleItem >= total){
-                        start+= 20
+                if (!isLoading) {
+                    if (visibleItemCount + pastVisibleItem >= total) {
+                        start += 20
                         mAdapter.notifyDataSetChanged()
                         requestLocationPermission()
                     }
@@ -248,9 +267,6 @@ class RestaurantFragment : Fragment() {
             }
         })
     }
-
-
-
 
 }
 

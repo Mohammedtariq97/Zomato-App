@@ -14,15 +14,15 @@ import com.example.zomatoapp.R
 
 
 class RestaurantDetailFragment : Fragment() {
-    lateinit var args:RestaurantDetailFragmentArgs
-    lateinit var restaurantImage:ImageView
-    lateinit var restaurantName:TextView
-    lateinit var cuisines:TextView
-    lateinit var localityVerbose:TextView
-    lateinit var rating:TextView
-    lateinit var avgCost:TextView
+    private lateinit var args:RestaurantDetailFragmentArgs
+    private lateinit var restaurantImage:ImageView
+    private lateinit var restaurantName:TextView
+    private lateinit var cuisines:TextView
+    private lateinit var localityVerbose:TextView
+    private lateinit var rating:TextView
+    private lateinit var avgCost:TextView
     lateinit var address:TextView
-    lateinit var timings:TextView
+    private lateinit var timings:TextView
 
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -66,10 +66,10 @@ class RestaurantDetailFragment : Fragment() {
     }
 
     private fun formatTimings(timings: String): String {
-        if(timings != ""){
-            return "Timings - $timings"
+        return if(timings != ""){
+            "Timings - $timings"
         }else{
-            return "Timings - 11am to 11pm"
+            "Timings - 11am to 11pm"
         }
 
     }

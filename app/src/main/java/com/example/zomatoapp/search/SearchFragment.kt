@@ -15,7 +15,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.zomatoapp.R
 import com.example.zomatoapp.model.RestaurantModel
-import com.example.zomatoapp.restaurants.RestaurantAdapter
 
 class SearchFragment : Fragment() {
     lateinit var searchRestaurantEditText:EditText
@@ -61,7 +60,7 @@ class SearchFragment : Fragment() {
     }
 
     private fun setRecyclerView(list: List<RestaurantModel>) {
-        val mAdapter = RestaurantAdapter(this.requireContext(), list)
+        val mAdapter = SearchAdapter(this.requireContext(), list)
         val mLayoutManager = LinearLayoutManager(this.requireContext())
         searchRecyclerView.layoutManager = mLayoutManager
         mLayoutManager.orientation = RecyclerView.VERTICAL

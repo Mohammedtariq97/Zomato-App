@@ -1,4 +1,4 @@
-package com.example.zomatoapp.restaurants
+package com.example.zomatoapp.search
 
 import android.content.Context
 import android.view.LayoutInflater
@@ -12,10 +12,9 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.example.zomatoapp.R
 import com.example.zomatoapp.model.RestaurantModel
-import com.example.zomatoapp.search.SearchFragmentDirections
 
-class RestaurantAdapter(private val context: Context, private val list: List<RestaurantModel>) :
-    RecyclerView.Adapter<RestaurantAdapter.ViewHolder>() {
+class SearchAdapter(private val context: Context, private val list: List<RestaurantModel>) :
+    RecyclerView.Adapter<SearchAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         return ViewHolder(
