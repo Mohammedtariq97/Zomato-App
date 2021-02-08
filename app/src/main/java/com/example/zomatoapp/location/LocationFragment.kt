@@ -15,6 +15,7 @@ import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.TextView
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import androidx.transition.TransitionInflater
@@ -36,12 +37,14 @@ class LocationFragment : Fragment() {
     lateinit var recyclerViewLocation:RecyclerView
     lateinit var currentLocation:TextView
     private lateinit var client: FusedLocationProviderClient
+    lateinit var locationViewModel: LocationViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         client = LocationServices.getFusedLocationProviderClient(this.requireContext())
+        locationViewModel = ViewModelProvider(this).get(LocationViewModel::class.java)
         return inflater.inflate(R.layout.fragment_location, container, false)
     }
 
