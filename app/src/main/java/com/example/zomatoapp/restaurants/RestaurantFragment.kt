@@ -27,6 +27,7 @@ import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.gms.tasks.Task
 import okio.IOException
 import java.util.*
+import kotlin.collections.ArrayList
 
 
 @Suppress("DEPRECATION")
@@ -48,6 +49,8 @@ class RestaurantFragment : Fragment() {
     lateinit var geocoder:Geocoder
     lateinit var lat:String
     lateinit var lon:String
+    var resList = ArrayList<RestaurantModel>()
+    lateinit var mLayoutManager:LinearLayoutManager
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -69,6 +72,11 @@ class RestaurantFragment : Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
+        mLayoutManager = LinearLayoutManager(this.requireContext())
+        restaurantRecyclerViewList.layoutManager = mLayoutManager
+        mLayoutManager.orientation = RecyclerView.VERTICAL
+        mAdapter = RestaurantAdapter1(this.requireContext(), resList)
+        restaurantRecyclerViewList.adapter = mAdapter
         requestLocationPermission()
         val inflater = TransitionInflater.from(requireContext())
         exitTransition = inflater.inflateTransition(R.transition.fade)
@@ -83,7 +91,108 @@ class RestaurantFragment : Fragment() {
             }
 
         })
+        restaurantRecyclerViewList.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+                val visibleItemCount = mLayoutManager.childCount
+                val pastVisibleItem = mLayoutManager.findFirstCompletelyVisibleItemPosition()
+                val total = mAdapter.itemCount
+                if (isLoading) {
+                    if (visibleItemCount + pastVisibleItem == total) {
+
+                        if(start <= 100){
+                            start += 20
+                        }
+                        requestLocationPermission()
+                        isLoading = false
+                    }
+                }
+            }
+
+            override fun onScrollStateChanged(
+                recyclerView: RecyclerView,
+                newState: Int
+            ) {
+                super.onScrollStateChanged(
+                    recyclerView,
+                    newState
+                )
+                isLoading = true
+            }
+        })
+
     }
+
+    private fun requestLocationPermission() {
+
+        if (checkSelfPermission(this.requireContext(), Manifest.permission.ACCESS_FINE_LOCATION)
+            == PackageManager.PERMISSION_GRANTED) {
+            client.lastLocation.addOnCompleteListener(object : OnCompleteListener<Location> {
+                override fun onComplete(task: Task<Location>) {
+                    val location = task.result
+                    if (location != null) {
+                        try {
+                            val geocoder = Geocoder(context, Locale.getDefault())
+                            val address = geocoder.getFromLocation(
+                                location.latitude, location.longitude, 1
+                            )
+                            searchLocationTextView.text = address[0].getAddressLine(0)
+                            restaurantFragmentViewModel
+                                .callNearByRestaurantApi(
+                                    address[0].latitude.toString(),
+                                    address[0].longitude.toString()
+                                )
+                            restaurantFragmentViewModel.liveDataNearByResSearch.observe(
+                                viewLifecycleOwner,
+                                Observer {
+                                    Log.d(TAG, "it = $it")
+                                    indeterminateBar.visibility = View.GONE
+                                    restaurantFragmentViewModel.callSearchNearByRestaurantApi(
+                                        it.location.entity_id.toString(),
+                                        it.location.entity_type,
+                                        start.toString(),
+                                        address[0].latitude.toString(),
+                                        address[0].longitude.toString()
+                                    )
+                                    restaurantFragmentViewModel.livedataRestaurantSearch.observe(
+                                        viewLifecycleOwner, Observer {
+                                            for(index in it.restaurants){
+                                                resList.add(index)
+                                            }
+                                            Log.d(TAG,"resList = ${resList.size}")
+                                            mAdapter.notifyDataSetChanged()
+
+                                            Log.d(TAG,"start = $start")
+
+                                        }
+                                    )
+
+                                })
+
+                        } catch (e: IOException) {
+                            e.printStackTrace()
+                        }
+                    }
+
+                }
+
+            })
+        } else {
+            requestPermissions(
+                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+                REQUEST_LOCATION_PERMISSION
+            )
+        }
+
+    }
+
+//    private fun setRecyclerView1(list: List<RestaurantModel>) {
+//        mAdapter = RestaurantAdapter1(this.requireContext(), list)
+//
+//
+//
+//
+//    }
 
     override fun onRequestPermissionsResult(
         requestCode: Int,
@@ -119,19 +228,7 @@ class RestaurantFragment : Fragment() {
                                         location.latitude, location.longitude, 1
                                     )
                                     searchLocationTextView.text = address[0].getAddressLine(0)
-                                    Log.d(TAG, "${address.get(0).latitude}")
-                                    Log.d(TAG, "${address.get(0).longitude}")
-                                    Log.d(TAG, address[0].adminArea)
-//                                    Log.d(TAG, address[0].featureName)
-                                    Log.d(TAG, address[0].getAddressLine(0))
-                                    Log.d(TAG, address[0].locality)
-//                                    Log.d(TAG, address[0].subAdminArea)
-                                    Log.d(TAG, address[0].subLocality)
-//                                    Log.d(TAG, address[0].postalCode)
-//                                    Log.d(TAG, address[0].countryName)
-                                    Log.d(TAG, address[0].locale.toString())
-                                    Log.d(TAG, address[0].premises)
-                                    Log.d(TAG, address[0].thoroughfare)
+
                                     lat = address.get(0).latitude.toString()
                                     lon = address.get(0).longitude.toString()
                                     restaurantFragmentViewModel
@@ -153,7 +250,8 @@ class RestaurantFragment : Fragment() {
                                             )
                                             restaurantFragmentViewModel.livedataRestaurantSearch.observe(
                                                 viewLifecycleOwner, Observer {
-                                                    setRecyclerView1(it.restaurants)
+
+//                                                    setRecyclerView1(it.restaurants)
                                                 }
                                             )
 
@@ -174,98 +272,6 @@ class RestaurantFragment : Fragment() {
             }
         }
 
-    }
-
-    private fun requestLocationPermission() {
-
-        if (checkSelfPermission(
-                this.requireContext(),
-                Manifest.permission.ACCESS_FINE_LOCATION
-            )
-            == PackageManager.PERMISSION_GRANTED
-        ) {
-            client.lastLocation.addOnCompleteListener(object : OnCompleteListener<Location> {
-                override fun onComplete(task: Task<Location>) {
-                    val location = task.result
-                    if (location != null) {
-                        try {
-                            val geocoder = Geocoder(context, Locale.getDefault())
-                            val address = geocoder.getFromLocation(
-                                location.latitude, location.longitude, 1
-                            )
-                            Log.d(TAG, "${address.get(0).latitude}")
-                            Log.d(TAG, "${address.get(0).longitude}")
-                            Log.d(TAG, address[0].adminArea)
-                            Log.d(TAG, address[0].featureName)
-                            Log.d(TAG, address[0].getAddressLine(0))
-                            Log.d(TAG, address[0].locality)
-                            Log.d(TAG, address[0].subAdminArea)
-//                            Log.d(TAG, address[0].subLocality.toString())
-                            Log.d(TAG, address[0].postalCode)
-                            Log.d(TAG, address[0].countryName)
-                            searchLocationTextView.text = address[0].getAddressLine(0)
-                            restaurantFragmentViewModel
-                                .callNearByRestaurantApi(
-                                    address[0].latitude.toString(),
-                                    address[0].longitude.toString()
-                                )
-                            restaurantFragmentViewModel.liveDataNearByResSearch.observe(
-                                viewLifecycleOwner,
-                                Observer {
-                                    Log.d(TAG, "it = $it")
-                                    indeterminateBar.visibility = View.GONE
-                                    restaurantFragmentViewModel.callSearchNearByRestaurantApi(
-                                        it.location.entity_id.toString(),
-                                        it.location.entity_type,
-                                        start.toString(),
-                                        address[0].latitude.toString(),
-                                        address[0].longitude.toString()
-                                    )
-                                    restaurantFragmentViewModel.livedataRestaurantSearch.observe(
-                                        viewLifecycleOwner, Observer {
-                                            setRecyclerView1(it.restaurants)
-                                        }
-                                    )
-
-                                })
-                        } catch (e: IOException) {
-                            e.printStackTrace()
-                        }
-                    }
-
-                }
-
-            })
-        } else {
-            requestPermissions(
-                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
-                REQUEST_LOCATION_PERMISSION
-            )
-        }
-
-    }
-
-    private fun setRecyclerView1(list: List<RestaurantModel>) {
-        mAdapter = RestaurantAdapter1(this.requireContext(), list)
-        val mLayoutManager = LinearLayoutManager(this.requireContext())
-        restaurantRecyclerViewList.layoutManager = mLayoutManager
-        mLayoutManager.orientation = RecyclerView.VERTICAL
-        restaurantRecyclerViewList.adapter = mAdapter
-        restaurantRecyclerViewList.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                super.onScrolled(recyclerView, dx, dy)
-                val visibleItemCount = mLayoutManager.childCount
-                val pastVisibleItem = mLayoutManager.findFirstCompletelyVisibleItemPosition()
-                val total = mAdapter.itemCount
-                if (!isLoading) {
-                    if (visibleItemCount + pastVisibleItem >= total) {
-                        start += 20
-                        mAdapter.notifyDataSetChanged()
-                        requestLocationPermission()
-                    }
-                }
-            }
-        })
     }
 
 }

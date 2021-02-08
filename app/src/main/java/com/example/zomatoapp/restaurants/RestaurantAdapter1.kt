@@ -13,8 +13,9 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.example.zomatoapp.R
 import com.example.zomatoapp.model.RestaurantModel
+import java.util.ArrayList
 
-class RestaurantAdapter1(private val context: Context, private val list: List<RestaurantModel>) :
+class RestaurantAdapter1(private val context: Context, private val list: MutableList<RestaurantModel>) :
     RecyclerView.Adapter<RestaurantAdapter1.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -77,5 +78,15 @@ class RestaurantAdapter1(private val context: Context, private val list: List<Re
 
     private fun formatRating(rating: String): String {
         return "$rating/5"
+    }
+
+//    fun addAll(myArray : ArrayList<RestaurantModel>){
+//        for(index in list){
+//            list.add(index)
+//        }
+//    }
+
+    fun clear(){
+        list.clear()
     }
 }
