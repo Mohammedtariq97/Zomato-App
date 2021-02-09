@@ -17,9 +17,11 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.transition.TransitionInflater
 import com.example.zomatoapp.R
+import com.example.zomatoapp.model.LocationModel
 import com.example.zomatoapp.restaurants.RestaurantFragment
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
@@ -38,6 +40,8 @@ class LocationFragment : Fragment() {
     lateinit var currentLocation:TextView
     private lateinit var client: FusedLocationProviderClient
     lateinit var locationViewModel: LocationViewModel
+    lateinit var locationAdapter: LocationAdapter
+    lateinit var layoutManager: LinearLayoutManager
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -62,7 +66,7 @@ class LocationFragment : Fragment() {
         enterTransition = inflater.inflateTransition(R.transition.fade)
         currentLocation.setOnClickListener(object:View.OnClickListener{
             override fun onClick(v: View?) {
-                getCurrentLocation()
+                findNavController().navigate(R.id.action_locationFragment_to_restaurantFragment)
             }
 
         })
@@ -71,8 +75,13 @@ class LocationFragment : Fragment() {
 
             }
 
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-
+            override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
+                if(s.length > 2){
+                    locationViewModel.callLocationApi(s.toString())
+                    locationViewModel.liveDataLocationSearch.observe(viewLifecycleOwner, androidx.lifecycle.Observer {
+                    setRecyclerView(it.location_suggestions)
+                    })
+                }
             }
 
             override fun afterTextChanged(s: Editable?) {
@@ -82,47 +91,12 @@ class LocationFragment : Fragment() {
         })
     }
 
-    private fun getCurrentLocation() {
-        if (ContextCompat.checkSelfPermission(
-                this.requireContext(),
-                Manifest.permission.ACCESS_FINE_LOCATION
-            )
-            == PackageManager.PERMISSION_GRANTED
-        ) {
-            client.lastLocation.addOnCompleteListener(object : OnCompleteListener<Location> {
-                override fun onComplete(task: Task<Location>) {
-                    val location = task.getResult()
-                    if (location != null) {
-                        try {
-                            val geocoder = Geocoder(context, Locale.getDefault())
-                            val address = geocoder.getFromLocation(
-                                location.latitude, location.longitude, 1
-                            )
-                            Log.d(RestaurantFragment.TAG, "${address.get(0).latitude}")
-                            Log.d(RestaurantFragment.TAG, "${address.get(0).longitude}")
-                            Log.d(RestaurantFragment.TAG, address[0].adminArea)
-                            Log.d(RestaurantFragment.TAG, address[0].featureName)
-                            Log.d(RestaurantFragment.TAG, address[0].getAddressLine(0))
-                            Log.d(RestaurantFragment.TAG, address[0].locality)
-                            Log.d(RestaurantFragment.TAG, address[0].subAdminArea)
-//                            Log.d(RestaurantFragment.TAG, address[0].subLocality.toString())
-                            Log.d(RestaurantFragment.TAG, address[0].postalCode)
-                            Log.d(RestaurantFragment.TAG, address[0].countryName)
-                            val addressString = address[0].getAddressLine(0)
-                            findNavController().navigate(R.id.action_locationFragment_to_restaurantFragment)
-                        } catch (e: IOException) {
-                            e.printStackTrace()
-                        }
-                    }
-                }
-
-            })
-        } else {
-            requestPermissions(
-                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
-                RestaurantFragment.REQUEST_LOCATION_PERMISSION
-            )
-        }
+    private fun setRecyclerView(list: List<LocationModel>) {
+        locationAdapter = LocationAdapter(list)
+        layoutManager = LinearLayoutManager(this.requireContext())
+        layoutManager.orientation = RecyclerView.VERTICAL
+        recyclerViewLocation.layoutManager = layoutManager
+        recyclerViewLocation.adapter = locationAdapter
     }
 
 }

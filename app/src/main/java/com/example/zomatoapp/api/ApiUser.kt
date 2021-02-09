@@ -45,6 +45,8 @@ interface ApiUser {
         @Query("sort") sort: String,
         @Query("order") order: String
     ): Call<BaseModel1>
+
+
 }
 
 //https://developers.zomato.com/api/v2.1/search?entity_id=11332&entity_type=city&start=0&count=20&lat=10.7905&lon=78.7047&radius=20000&sort=real_distance&order=asc
