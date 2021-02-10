@@ -1,20 +1,14 @@
 package com.example.zomatoapp.location
 
-import android.Manifest
-import android.content.pm.PackageManager
-import android.location.Geocoder
-import android.location.Location
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.TextView
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -22,23 +16,11 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.transition.TransitionInflater
 import com.example.zomatoapp.R
 import com.example.zomatoapp.model.LocationModel
-import com.example.zomatoapp.restaurants.RestaurantFragment
-import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.android.gms.location.LocationServices
-import com.google.android.gms.tasks.OnCompleteListener
-import com.google.android.gms.tasks.Task
-import java.io.IOException
-import java.util.*
 
-class LocationFragment : Fragment() {
-    companion object {
-        const val TAG = "LocationFragment"
-        const val REQUEST_LOCATION_PERMISSION = 2
-    }
-    lateinit var locationSearchEditText:EditText
-    lateinit var recyclerViewLocation:RecyclerView
-    lateinit var currentLocation:TextView
-    private lateinit var client: FusedLocationProviderClient
+class LocationsFragment : Fragment() {
+    lateinit var locationSearchEditText: EditText
+    lateinit var recyclerViewLocation: RecyclerView
+    lateinit var currentLocation: TextView
     lateinit var locationViewModel: LocationViewModel
     lateinit var locationAdapter: LocationAdapter
     lateinit var layoutManager: LinearLayoutManager
@@ -47,9 +29,8 @@ class LocationFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        client = LocationServices.getFusedLocationProviderClient(this.requireContext())
         locationViewModel = ViewModelProvider(this).get(LocationViewModel::class.java)
-        return inflater.inflate(R.layout.fragment_location, container, false)
+        return inflater.inflate(R.layout.fragment_locationdetail, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -57,7 +38,6 @@ class LocationFragment : Fragment() {
         locationSearchEditText = view.findViewById(R.id.locationSearchEditText)
         recyclerViewLocation = view.findViewById(R.id.recyclerViewLocation)
         currentLocation = view.findViewById(R.id.currentLocation)
-
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -66,11 +46,11 @@ class LocationFragment : Fragment() {
         enterTransition = inflater.inflateTransition(R.transition.fade)
         currentLocation.setOnClickListener(object:View.OnClickListener{
             override fun onClick(v: View?) {
-                findNavController().navigate(R.id.action_locationFragment_to_restaurantFragment)
+                findNavController().navigate(R.id.action_locationsFragment_to_restaurantFragment)
             }
 
         })
-        locationSearchEditText.addTextChangedListener(object:TextWatcher{
+        locationSearchEditText.addTextChangedListener(object: TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
 
             }
@@ -78,8 +58,9 @@ class LocationFragment : Fragment() {
             override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
                 if(s.length > 2){
                     locationViewModel.callLocationApi(s.toString())
-                    locationViewModel.liveDataLocationSearch.observe(viewLifecycleOwner, androidx.lifecycle.Observer {
-                    setRecyclerView(it.location_suggestions)
+                    locationViewModel.liveDataLocationSearch.observe(viewLifecycleOwner,
+                        androidx.lifecycle.Observer {
+                        setRecyclerView(it.location_suggestions)
                     })
                 }
             }
@@ -98,5 +79,4 @@ class LocationFragment : Fragment() {
         recyclerViewLocation.layoutManager = layoutManager
         recyclerViewLocation.adapter = locationAdapter
     }
-
 }

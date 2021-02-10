@@ -52,6 +52,7 @@ class RestaurantFragment : Fragment() {
     var resList = ArrayList<RestaurantModel>()
     lateinit var mLayoutManager:LinearLayoutManager
 
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -72,6 +73,8 @@ class RestaurantFragment : Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
+
+
         mLayoutManager = LinearLayoutManager(this.requireContext())
         restaurantRecyclerViewList.layoutManager = mLayoutManager
         mLayoutManager.orientation = RecyclerView.VERTICAL
@@ -87,7 +90,7 @@ class RestaurantFragment : Fragment() {
         })
         searchLocationTextView.setOnClickListener(object : View.OnClickListener {
             override fun onClick(v: View?) {
-                v?.findNavController()?.navigate(R.id.action_restaurantFragment_to_locationFragment)
+                v?.findNavController()?.navigate(R.id.action_restaurantFragment_to_locationsFragment)
             }
 
         })
@@ -137,6 +140,8 @@ class RestaurantFragment : Fragment() {
                                 location.latitude, location.longitude, 1
                             )
                             searchLocationTextView.text = address[0].getAddressLine(0)
+
+
                             restaurantFragmentViewModel
                                 .callNearByRestaurantApi(
                                     address[0].latitude.toString(),

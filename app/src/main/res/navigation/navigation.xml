@@ -19,8 +19,8 @@
             app:enterAnim="@android:anim/fade_in"
             app:exitAnim="@android:anim/fade_out" />
         <action
-            android:id="@+id/action_restaurantFragment_to_locationFragment"
-            app:destination="@id/locationFragment" />
+            android:id="@+id/action_restaurantFragment_to_locationsFragment"
+            app:destination="@id/locationsFragment" />
     </fragment>
     <fragment
         android:id="@+id/restaurantDetailFragment"
@@ -64,15 +64,12 @@
             app:destination="@id/restaurantDetailFragment" />
     </fragment>
     <fragment
-        android:id="@+id/locationFragment"
-        android:name="com.example.zomatoapp.location.LocationFragment"
-        android:label="fragment_location"
-        tools:layout="@layout/fragment_location" >
+        android:id="@+id/locationsFragment"
+        android:name="com.example.zomatoapp.location.LocationsFragment"
+        android:label="fragment_locationdetail"
+        tools:layout="@layout/fragment_locationdetail" >
         <action
-            android:id="@+id/action_locationFragment_to_restaurantFragment"
-            app:destination="@id/restaurantFragment" >
-            <argument
-                android:name="addressString" />
-        </action>
+            android:id="@+id/action_locationsFragment_to_restaurantFragment"
+            app:destination="@id/restaurantFragment" />
     </fragment>
 </navigation>
