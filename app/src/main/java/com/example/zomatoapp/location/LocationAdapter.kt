@@ -26,9 +26,11 @@ class LocationAdapter(private val list:List<LocationModel>):RecyclerView.Adapter
         holder.location.text = data.city_name
         val location = data.title
         val addressString = data.city_name
+
         holder.itemView.setOnClickListener(object:View.OnClickListener{
             override fun onClick(v: View) {
                 v.findNavController().navigate(R.id.action_locationsFragment_to_restaurantFragment)
+
             }
 
         })
@@ -37,9 +39,6 @@ class LocationAdapter(private val list:List<LocationModel>):RecyclerView.Adapter
     override fun getItemCount(): Int {
         return list.size
     }
-
-
-
 
     class ViewHolder(itemView: View):RecyclerView.ViewHolder(itemView) {
         val locationTitle = itemView.findViewById<TextView>(R.id.locationTitle)

@@ -51,6 +51,7 @@ class RestaurantFragment : Fragment() {
     lateinit var lon:String
     var resList = ArrayList<RestaurantModel>()
     lateinit var mLayoutManager:LinearLayoutManager
+    var isLocationChanged = false
 
 
     override fun onCreateView(
@@ -65,10 +66,16 @@ class RestaurantFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        activity?.actionBar?.show()
         restaurantRecyclerViewList = view.findViewById(R.id.restaurantRecyclerViewList)
         searchLocationTextView = view.findViewById(R.id.searchLocationTextView)
         searchRestaurantTextView = view.findViewById(R.id.searchRestaurantTextView)
         indeterminateBar = view.findViewById(R.id.indeterminateBar)
+        view.findNavController().currentBackStackEntry?.savedStateHandle
+            ?.getLiveData<String>("location")?.observe(viewLifecycleOwner) {result ->
+                isLocationChanged = true
+                searchLocationTextView.text = result
+        }
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -139,8 +146,9 @@ class RestaurantFragment : Fragment() {
                             val address = geocoder.getFromLocation(
                                 location.latitude, location.longitude, 1
                             )
-                            searchLocationTextView.text = address[0].getAddressLine(0)
-
+                            if(!isLocationChanged){
+                                searchLocationTextView.text = address[0].getAddressLine(0)
+                            }
 
                             restaurantFragmentViewModel
                                 .callNearByRestaurantApi(
