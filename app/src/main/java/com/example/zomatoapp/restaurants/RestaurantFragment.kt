@@ -72,8 +72,7 @@ class RestaurantFragment : Fragment() {
         searchRestaurantTextView = view.findViewById(R.id.searchRestaurantTextView)
         indeterminateBar = view.findViewById(R.id.indeterminateBar)
         view.findNavController().currentBackStackEntry?.savedStateHandle
-            ?.getLiveData<String>("location")?.observe(viewLifecycleOwner) {result ->
-                isLocationChanged = true
+            ?.getLiveData<String>("key")?.observe(viewLifecycleOwner) {result ->
                 searchLocationTextView.text = result
         }
     }
@@ -90,6 +89,7 @@ class RestaurantFragment : Fragment() {
         requestLocationPermission()
         val inflater = TransitionInflater.from(requireContext())
         exitTransition = inflater.inflateTransition(R.transition.fade)
+
         searchRestaurantTextView.setOnClickListener(object : View.OnClickListener {
             override fun onClick(v: View?) {
                 v?.findNavController()?.navigate(R.id.action_restaurantFragment_to_searchFragment)

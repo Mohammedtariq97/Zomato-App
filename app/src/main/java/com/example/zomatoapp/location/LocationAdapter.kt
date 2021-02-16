@@ -29,6 +29,7 @@ class LocationAdapter(private val list:List<LocationModel>):RecyclerView.Adapter
 
         holder.itemView.setOnClickListener(object:View.OnClickListener{
             override fun onClick(v: View) {
+                v.findNavController().previousBackStackEntry?.savedStateHandle?.set("key", data.title)
                 v.findNavController().navigate(R.id.action_locationsFragment_to_restaurantFragment)
 
             }
